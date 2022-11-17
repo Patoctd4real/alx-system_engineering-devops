@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Displays listening ports. Includes listening sockets as well
+# + as the PID and name of the program to which each socket belongs.
+PORT=8080
+while printf -v regex ':%04X .* 0A ' $PORT;grep -q "$regex" /proc/net/tcp*;do
+    ((PORT++))
+  done
+echo First free port number: $PORT
