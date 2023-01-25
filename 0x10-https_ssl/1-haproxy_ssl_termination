@@ -27,19 +27,12 @@ defaults
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
 
-frontend Local_Server
-        bind 100.25.139.252:80
-        mode http
-        default_backend Web_Servers
+frontend myfrontend
+	bind *:80
+	bind *:443 ssl crt /etc/haproxy/certs/www.patoctd.tech.pem
+	default_backend myservers
 
-backend Web_Servers
-        balance roundrobin
-        mode http
-        server web-01 54.167.184.250:80 check
-        server web-02 34.229.69.27:80 check
-
-listen http-in
-        bind 100.25.139.252:80
-        balance roundrobin
-        server 87235-web-01 54.89.179.246:80 check
-        server 87235-web-02 34.229.69.27:80 check
+backend myservers
+	balance roundrobin
+	server web-01 54.89.179.246:80 check
+	server web-02 34.229.69.27:80 check

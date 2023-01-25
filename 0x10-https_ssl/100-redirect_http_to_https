@@ -25,22 +25,13 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
+frontend myfrontend
+	bind *:80
+	bind *:443 ssl crt /etc/haproxy/certs/www.patoctd.tech.pem
+	http-request redirect scheme https code 301 if { hdr(Host) -i www.patoctd.tech } !{ ssl_fc }
+	default_backend myservers
 
-
-
-# start of parameters for patoctd.tech
-frontend patoctd.tech-http-frontend
-        bind 100.25.139.252:80
-        redirect scheme https code 301 if !{ ssl_fc }
-        http-request set-header X-Forwarded-Proto http
-        default_backend  patoctd.tech-backend
-frontend patoctd.tech-https-frontend
-        bind *:443 ssl crt /etc/letsencrypt/live/www.patoctd.tech/fullchain.pem
-        http-request set-header X-Forwarded-Proto https
-        default_backend patoctd.tech-backend
-backend patoctd-backend
-        balance roundrobin
-        server 83389-web-01 54.89.179.246:80 check
-        server 83389-web-02 34.229.69.27:80 check
-# end of parameters
-                                            
+backend myservers
+	balance roundrobin
+	server web-01 54.89.179.246:80 check
+	server web-02 34.229.69.27:80 check                                      
